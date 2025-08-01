@@ -19,7 +19,6 @@ services:
       - ./.env
       #- ./.env_flaskapp
     environment:
-      DATABASE_URL: ${DATABASE_URL}
       TZ: ${TZ}
       FLASK_ENV: development  # Added environment variable for Flask environment
     networks:
