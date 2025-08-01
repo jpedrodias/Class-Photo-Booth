@@ -15,9 +15,6 @@ services:
     ports:
       - ${FLASKAPP_PORT}:5000
       - 5000:5000
-      - 7000:5000
-      - 8000:5000
-      - 9000:5000
     env_file:
       - ./.env
       #- ./.env_flaskapp

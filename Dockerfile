@@ -14,6 +14,11 @@ RUN apt update -y && \
     apt autoclean -y && \
     apt autoremove -y
 
+RUN apt update -y && \
+    apt install -y libgl1-mesa-glx && \
+    apt autoclean -y && \
+    apt autoremove -y
+
 RUN dos2unix -i -o ./*.sh && \
     chmod +x ./*.sh
 
