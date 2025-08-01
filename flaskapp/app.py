@@ -9,7 +9,7 @@ import numpy as np
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Necessário para usar sessões
+app.secret_key = os.getenv('FLASKAPP_SECRET_KEY', 'supersecretkey')
 app.config['LOGIN_PIN'] = os.getenv('FLASKAPP_LOGIN_PIN', '1234')
 
 # Configuração das pastas
