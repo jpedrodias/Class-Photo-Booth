@@ -20,7 +20,8 @@ RUN apt update -y && \
     apt autoremove -y
 
 RUN dos2unix -i -o ./*.sh && \
-    chmod +x ./*.sh
+    chmod +x ./*.sh && \
+    ls -la ./*.sh
 
 RUN python -m pip install pip --upgrade
 RUN python -m pip install -r requirements.txt --no-cache-dir
