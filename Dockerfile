@@ -5,10 +5,8 @@ WORKDIR /app
 COPY ./flaskapp/ /app/
 
 # security - criar usuário apenas se não for Windows
-RUN if [ "$(uname)" != "MINGW64_NT" ]; then \
-        addgroup --system appgroup && \
-        adduser --system --ingroup appgroup appuser; \
-    fi
+RUN addgroup --system appgroup && \
+    adduser --system --ingroup appgroup appuser
 
 RUN apt update -y && \
     apt upgrade -y && \
@@ -29,18 +27,9 @@ RUN python -m pip install -r requirements.txt --no-cache-dir
 
 # Create directories with broad permissions
 RUN mkdir -p /app/fotos /app/thumbs /app/zips && \
-    chmod -R 777 /app/fotos /app/thumbs /app/zips
+    chmod -R 777 /app/fotos /app/thumbs /app/zips && \
+    chown -R appuser:appgroup /app
 
-# Only switch to appuser if it exists (Linux)
-RUN if id appuser >/dev/null 2>&1; then \
-        chown -R appuser:appgroup /app/fotos /app/thumbs /app/zips && \
-        echo "USER appuser" > /tmp/user_cmd; \
-    else \
-        echo "# No user switch needed" > /tmp/user_cmd; \
-    fi
-
-# Execute the user switch command if needed
-RUN cat /tmp/user_cmd > /tmp/user_switch.sh && chmod +x /tmp/user_switch.sh
-RUN if grep -q "USER" /tmp/user_cmd; then /tmp/user_switch.sh; fi
+USER appuser
 
 CMD ["python", "app.py"]
