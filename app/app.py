@@ -38,7 +38,7 @@ def no_cache(f):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for('turmas'))
 
 @app.route('/preview')
 def preview():
@@ -80,13 +80,18 @@ def turma(nome):
 
 @app.route('/download/<turma>')
 def download_zip(turma):
-    zip_path = os.path.join(ZIPS_DIR, f'{turma}.zip')
-    with zipfile.ZipFile(zip_path, 'w') as zipf:
-        turma_dir = os.path.join(FOTOS_DIR, turma)
-        for root, dirs, files in os.walk(turma_dir):
-            for file in files:
-                zipf.write(os.path.join(root, file), arcname=file)
-    return send_file(zip_path, as_attachment=True)
+    turma_dir = os.path.join(FOTOS_DIR, turma)
+    files = [file for root, dirs, files in os.walk(turma_dir) for file in files]
+
+    if not files:
+        return "Nenhuma imagem disponível para download.", 400
+
+    memory_file = BytesIO()
+    with zipfile.ZipFile(memory_file, 'w') as zipf:
+        for file in files:
+            zipf.write(os.path.join(turma_dir, file), arcname=file)
+    memory_file.seek(0)
+    return send_file(memory_file, as_attachment=True, download_name=f'{turma}.zip')
 
 @app.route('/take_photo/<turma>/<processo>')
 def take_photo(turma, processo):
@@ -120,7 +125,8 @@ def upload_photo(turma, processo):
         start_y = (height - min_dim) // 2
         cropped_image = image[start_y:start_y + min_dim, start_x:start_x + min_dim]
         thumbnail = cv2.resize(cropped_image, (250, 250))
-        cv2.imwrite(thumb_path, thumbnail)
+        cv2.imwrite(photo_path, cv2.imdecode(cv2.imencode('.jpg', image, [cv2.IMWRITE_JPEG_QUALITY, 95])[1], cv2.IMREAD_COLOR))
+        cv2.imwrite(thumb_path, cv2.imdecode(cv2.imencode('.jpg', thumbnail, [cv2.IMWRITE_JPEG_QUALITY, 50])[1], cv2.IMREAD_COLOR))
 
     return "Foto enviada com sucesso.", 200
 
@@ -131,6 +137,10 @@ def get_thumbnail(turma, processo):
     if not os.path.exists(thumb_path):
         return send_file(os.path.join(BASE_DIR, 'static', 'student_icon.jpg'))
     return send_file(thumb_path)
+
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
