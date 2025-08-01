@@ -25,10 +25,11 @@ RUN dos2unix -i -o ./*.sh && \
 RUN python -m pip install pip --upgrade
 RUN python -m pip install -r requirements.txt --no-cache-dir
 
-# Create directories with broad permissions
-RUN mkdir -p /app/fotos /app/thumbs /app/zips && \
-    chmod -R 777 /app/fotos /app/thumbs /app/zips && \
-    chown -R appuser:appgroup /app
+# Não criar diretórios aqui - serão criados pelo código Python
+# com as permissões corretas após o volume ser montado
+
+# Dar ownership de todo /app para appuser
+RUN chown -R appuser:appgroup /app
 
 USER appuser
 
