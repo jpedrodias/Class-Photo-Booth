@@ -8,7 +8,6 @@ instance/
 __pypackages__/
 
 # Environments
-.env
 .envrc
 .venv
 env/
