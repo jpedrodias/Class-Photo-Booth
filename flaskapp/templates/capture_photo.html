@@ -81,6 +81,14 @@
                         alert('Erro ao capturar a foto.');
                     });
             });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    captureButton.click();
+                } else if (event.key === 'Escape') {
+                    window.location.href = `/turma/${turma}`;
+                }
+            });
         });
     </script>
 </body>
