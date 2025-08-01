@@ -34,20 +34,40 @@
             const turma = "{{ turma }}";
             const processo = "{{ processo }}";
 
+            const CAMERA_STORAGE_KEY = 'classPhotoBooth_selectedCamera';
             let stream;
 
             async function startCamera(deviceId) {
                 if (stream) {
                     stream.getTracks().forEach(track => track.stop());
                 }
-                const constraints = deviceId ? { video: { deviceId: { exact: deviceId } } } : { video: true };
-                stream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = stream;
+                
+                try {
+                    const constraints = deviceId ? { video: { deviceId: { exact: deviceId } } } : { video: true };
+                    stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    video.srcObject = stream;
+                    
+                    // Salvar a câmera selecionada no localStorage
+                    if (deviceId) {
+                        localStorage.setItem(CAMERA_STORAGE_KEY, deviceId);
+                    }
+                } catch (error) {
+                    console.error('Erro ao iniciar câmera:', error);
+                    // Se falhar com a câmera específica, tentar a padrão
+                    if (deviceId) {
+                        console.log('Tentando câmera padrão...');
+                        await startCamera();
+                    } else {
+                        alert('Erro ao acessar a câmera. Verifique as permissões.');
+                    }
+                }
             }
 
+            // Obter dispositivos de vídeo
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
+            // Preencher o select com as câmeras disponíveis
             videoDevices.forEach((device, index) => {
                 const option = document.createElement('option');
                 option.value = device.deviceId;
@@ -55,11 +75,27 @@
                 cameraSelect.appendChild(option);
             });
 
+            // Recuperar a câmera selecionada anteriormente
+            const savedCameraId = localStorage.getItem(CAMERA_STORAGE_KEY);
+            let initialCameraId = null;
+
+            // Verificar se a câmera salva ainda está disponível
+            if (savedCameraId) {
+                const cameraExists = videoDevices.some(device => device.deviceId === savedCameraId);
+                if (cameraExists) {
+                    initialCameraId = savedCameraId;
+                    cameraSelect.value = savedCameraId;
+                }
+            }
+
+            // Event listener para mudança de câmera
             cameraSelect.addEventListener('change', () => {
-                startCamera(cameraSelect.value);
+                const selectedCameraId = cameraSelect.value;
+                startCamera(selectedCameraId);
             });
 
-            startCamera();
+            // Iniciar câmera (com a salva ou padrão)
+            await startCamera(initialCameraId);
 
             captureButton.addEventListener('click', () => {
                 const canvas = document.createElement('canvas');
