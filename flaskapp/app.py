@@ -107,7 +107,17 @@ def turma(nome):
         for row in reader:
             if row['turma'] == nome:
                 alunos.append(row)
-    return render_template('turma.html', turma=nome, alunos=alunos)
+    
+    # Contar fotos existentes
+    fotos_existentes = 0
+    turma_thumbs_dir = os.path.join(THUMBS_DIR, nome)
+    
+    for aluno in alunos:
+        thumb_path = os.path.join(turma_thumbs_dir, f"{aluno['processo']}.jpg")
+        if os.path.exists(thumb_path) and os.path.isfile(thumb_path):
+            fotos_existentes += 1
+    
+    return render_template('turma.html', turma=nome, alunos=alunos, fotos_existentes=fotos_existentes)
 
 @app.route('/download/<turma>')
 def download_zip(turma):

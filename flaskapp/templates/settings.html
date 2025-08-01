@@ -1,36 +1,440 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurações</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Configurações - Class Photo Booth</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 80px; /* Espaço para barra inferior */
+        }
+        
+        .header-section {
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .header-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .header-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .settings-container {
+            padding: 0 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .settings-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-top: 4px solid #667eea;
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .card-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+        
+        .file-input-button {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .file-input-button:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .file-input-button.has-file {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-color: #28a745;
+        }
+        
+        .file-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        
+        .action-btn.secondary:hover {
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .footer-btn {
+            flex: 1;
+            margin: 0 10px;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+        
+        .btn-logout {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+        
+        .footer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .csv-format-info {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 20px 20px;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .format-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .format-example {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        
+        @media (max-width: 576px) {
+            .header-title {
+                font-size: 1.5rem;
+            }
+            
+            .header-icon {
+                font-size: 2.5rem;
+            }
+            
+            .settings-card {
+                padding: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .card-title {
+                font-size: 1.1rem;
+            }
+            
+            .file-input-button {
+                padding: 25px 15px;
+            }
+            
+            .footer-btn {
+                padding: 12px;
+                font-size: 0.9rem;
+                margin: 0 5px;
+            }
+            
+            .settings-container {
+                padding: 0 15px;
+            }
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .loading.active {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0">Configurações</h1>
-            <div>
-                <a href="/" class="btn btn-secondary me-2" title="Voltar">
-                    <i class="bi bi-arrow-left"></i>
-                </a>
-                <a href="/logout" class="btn btn-danger" title="Logout">
-                    <i class="bi bi-box-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <label for="file">Carregar um novo CSV de Alunos:</label>
-            <input type="file" name="file" id="file" accept=".csv">
-            <button type="submit" class="btn btn-primary">Carregar</button>
-        </form>
-        <hr>
-        <form action="/turmas" method="get">
-            <button type="submit" class="btn btn-success">Usar Ficheiro Existente</button>
-        </form>
+    <div class="header-section">
+        <div class="header-icon">⚙️</div>
+        <h1 class="header-title">Configurações</h1>
+        <p class="header-subtitle">Gerir dados dos alunos</p>
     </div>
+    
+    <div class="csv-format-info">
+        <div class="format-title">
+            <i class="bi bi-info-circle"></i>
+            Formato do ficheiro CSV
+        </div>
+        <p>O ficheiro deve conter as seguintes colunas:</p>
+        <div class="format-example">
+turma,numero,processo,nome<br>
+5A,1,3035,Afonso Serra<br>
+5A,2,3999,Afonso Pereira<br>
+5B,1,4763,Alexandre Morais
+        </div>
+    </div>
+    
+    <div class="settings-container">
+        <div class="settings-card">
+            <div class="card-icon">📁</div>
+            <div class="card-title">Carregar Novo Ficheiro CSV</div>
+            <div class="card-description">
+                Faça upload de um novo ficheiro com os dados dos alunos. Isto irá substituir os dados existentes.
+            </div>
+            
+            <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+                <div class="file-input-wrapper">
+                    <input type="file" name="file" id="file" accept=".csv" class="file-input" required>
+                    <label for="file" class="file-input-button" id="fileButton">
+                        <i class="bi bi-cloud-upload" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+                        <span id="fileText">Clique para selecionar ficheiro CSV</span>
+                    </label>
+                </div>
+                
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span id="fileName"></span>
+                </div>
+                
+                <button type="submit" class="action-btn" id="uploadBtn" disabled>
+                    <i class="bi bi-upload loading" id="uploadIcon"></i>
+                    <span id="uploadText">Carregar Ficheiro</span>
+                </button>
+            </form>
+        </div>
+        
+        <div class="settings-card">
+            <div class="card-icon">✅</div>
+            <div class="card-title">Usar Dados Existentes</div>
+            <div class="card-description">
+                Continuar a usar o ficheiro CSV atualmente carregado no sistema.
+            </div>
+            
+            <form action="/turmas" method="get">
+                <button type="submit" class="action-btn secondary">
+                    <i class="bi bi-check-circle"></i>
+                    <span>Usar Ficheiro Existente</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="action-buttons">
+        <button onclick="window.location.href='/turmas'" class="footer-btn btn-back">
+            <i class="bi bi-arrow-left"></i>
+            <span>Voltar</span>
+        </button>
+        <button onclick="confirmLogout()" class="footer-btn btn-logout">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Sair</span>
+        </button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmLogout() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                window.location.href = '/logout';
+            }
+        }
+        
+        // Gestão do input de arquivo
+        const fileInput = document.getElementById('file');
+        const fileButton = document.getElementById('fileButton');
+        const fileText = document.getElementById('fileText');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const uploadText = document.getElementById('uploadText');
+        
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                
+                // Verificar se é CSV
+                if (!file.name.toLowerCase().endsWith('.csv')) {
+                    alert('Por favor, selecione apenas ficheiros CSV.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Atualizar interface
+                fileButton.classList.add('has-file');
+                fileText.textContent = 'Ficheiro selecionado ✓';
+                fileName.textContent = file.name;
+                fileInfo.style.display = 'block';
+                uploadBtn.disabled = false;
+            } else {
+                // Reset interface
+                fileButton.classList.remove('has-file');
+                fileText.textContent = 'Clique para selecionar ficheiro CSV';
+                fileInfo.style.display = 'none';
+                uploadBtn.disabled = true;
+            }
+        });
+        
+        // Gestão do upload
+        uploadForm.addEventListener('submit', function() {
+            uploadIcon.classList.add('active');
+            uploadText.textContent = 'A carregar...';
+            uploadBtn.disabled = true;
+        });
+        
+        // Drag and drop
+        fileButton.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#28a745';
+            this.style.backgroundColor = 'rgba(40, 167, 69, 0.1)';
+        });
+        
+        fileButton.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#667eea';
+            this.style.backgroundColor = '';
+        });
+        
+        fileButton.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#667eea';
+            this.style.backgroundColor = '';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+        
+        // Haptic feedback em dispositivos móveis
+        document.querySelectorAll('button, .file-input-button').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
