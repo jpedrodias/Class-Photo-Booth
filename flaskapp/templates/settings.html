@@ -295,6 +295,16 @@ turma,numero,processo,nome<br>
     </div>
     
     <div class="settings-container">
+        {% if not csv_exists %}
+        <div class="alert alert-info" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 20px; margin-bottom: 20px; color: white; border: 1px solid rgba(255,255,255,0.2);">
+            <div style="font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-info-circle" style="font-size: 1.2rem;"></i>
+                Primeiro Acesso
+            </div>
+            <p style="margin: 0;">Nenhum ficheiro de dados foi encontrado. Por favor, carregue um ficheiro CSV com os dados dos alunos para começar.</p>
+        </div>
+        {% endif %}
+        
         <div class="settings-card">
             <div class="card-icon">📁</div>
             <div class="card-title">Carregar Novo Ficheiro CSV</div>
@@ -323,6 +333,7 @@ turma,numero,processo,nome<br>
             </form>
         </div>
         
+        {% if csv_exists %}
         <div class="settings-card">
             <div class="card-icon">✅</div>
             <div class="card-title">Usar Dados Existentes</div>
@@ -337,6 +348,7 @@ turma,numero,processo,nome<br>
                 </button>
             </form>
         </div>
+        {% endif %}
     </div>
     
     <div class="action-buttons">

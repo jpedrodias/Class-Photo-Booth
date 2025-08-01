@@ -68,6 +68,10 @@ def no_cache(f):
 
 @app.route('/')
 def index():
+    # Verificar se o ficheiro alunos.csv existe
+    csv_path = os.path.join(BASE_DIR, 'alunos.csv')
+    if not os.path.exists(csv_path):
+        return redirect(url_for('settings'))
     return redirect(url_for('turmas'))
 
 @app.route('/preview')
@@ -90,23 +94,40 @@ def upload_csv():
 
 @app.route('/turmas')
 def turmas():
+    # Verificar se o ficheiro alunos.csv existe
+    csv_path = os.path.join(BASE_DIR, 'alunos.csv')
+    if not os.path.exists(csv_path):
+        return redirect(url_for('settings'))
+    
     turmas = []
-    with open(os.path.join(BASE_DIR, 'alunos.csv'), newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            if row['turma'] not in turmas:
-                turmas.append(row['turma'])
+    try:
+        with open(csv_path, newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row['turma'] not in turmas:
+                    turmas.append(row['turma'])
+    except (FileNotFoundError, PermissionError):
+        return redirect(url_for('settings'))
+    
     return render_template('turmas.html', turmas=turmas)
 
 @app.route('/turma/<nome>')
 @no_cache
 def turma(nome):
+    # Verificar se o ficheiro alunos.csv existe
+    csv_path = os.path.join(BASE_DIR, 'alunos.csv')
+    if not os.path.exists(csv_path):
+        return redirect(url_for('settings'))
+    
     alunos = []
-    with open(os.path.join(BASE_DIR, 'alunos.csv'), newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            if row['turma'] == nome:
-                alunos.append(row)
+    try:
+        with open(csv_path, newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row['turma'] == nome:
+                    alunos.append(row)
+    except (FileNotFoundError, PermissionError):
+        return redirect(url_for('settings'))
     
     # Contar fotos existentes
     fotos_existentes = 0
@@ -190,7 +211,10 @@ def get_thumbnail(turma, processo):
 
 @app.route('/settings')
 def settings():
-    return render_template('settings.html')
+    # Verificar se o ficheiro alunos.csv existe
+    csv_path = os.path.join(BASE_DIR, 'alunos.csv')
+    csv_exists = os.path.exists(csv_path)
+    return render_template('settings.html', csv_exists=csv_exists)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -198,9 +222,13 @@ def login():
         pin = request.form.get('pin')
         if pin == app.config['LOGIN_PIN']:
             session['logged_in'] = True
+            # Verificar se alunos.csv existe após login bem-sucedido
+            csv_path = os.path.join(BASE_DIR, 'alunos.csv')
+            if not os.path.exists(csv_path):
+                return redirect(url_for('settings'))
             return redirect(url_for('index'))
         else:
-            return render_template('login.html', error='PIN incorreto')
+            return render_template('login.html', error='Palavra-passe incorreta')
     return render_template('login.html')
 
 @app.route('/logout')
