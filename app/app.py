@@ -10,6 +10,7 @@ from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Necessário para usar sessões
+app.config['LOGIN_PIN'] = os.getenv('FLASKAPP_LOGIN_PIN', '1234')
 
 # Configuração das pastas
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -60,12 +61,13 @@ def upload_csv():
 
 @app.route('/turmas')
 def turmas():
-    turmas = set()
+    turmas = []
     with open(os.path.join(BASE_DIR, 'alunos.csv'), newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            turmas.add(row['turma'])
-    return render_template('turmas.html', turmas=sorted(turmas))
+            if row['turma'] not in turmas:
+                turmas.append(row['turma'])
+    return render_template('turmas.html', turmas=turmas)
 
 @app.route('/turma/<nome>')
 @no_cache
@@ -141,6 +143,27 @@ def get_thumbnail(turma, processo):
 @app.route('/settings')
 def settings():
     return render_template('settings.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        pin = request.form.get('pin')
+        if pin == app.config['LOGIN_PIN']:
+            session['logged_in'] = True
+            return redirect(url_for('index'))
+        else:
+            return render_template('login.html', error='PIN incorreto')
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
+
+@app.before_request
+def require_login():
+    if not session.get('logged_in') and request.endpoint not in ['login', 'static']:
+        return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
