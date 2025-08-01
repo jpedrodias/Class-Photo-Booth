@@ -28,8 +28,10 @@ RUN python -m pip install -r requirements.txt --no-cache-dir
 # Create directories and set permissions before switching to appuser
 RUN mkdir -p /app/fotos /app/thumbs /app/zips && \
     chown -R appuser:appgroup /app/fotos /app/thumbs /app/zips && \
-    chmod -R 755 /app/fotos /app/thumbs /app/zips
+    chmod -R 777 /app/fotos /app/thumbs /app/zips
 
 USER appuser
 
-#CMD [ "python", "app.py" ]
+# Use init script to ensure permissions
+ENTRYPOINT ["./init.sh"]
+CMD ["python", "app.py"]

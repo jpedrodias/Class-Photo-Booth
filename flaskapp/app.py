@@ -18,10 +18,39 @@ FOTOS_DIR = os.path.join(BASE_DIR, 'fotos')
 THUMBS_DIR = os.path.join(BASE_DIR, 'thumbs')
 ZIPS_DIR = os.path.join(BASE_DIR, 'zips')
 
-# Certifique-se de que as pastas existem
-os.makedirs(FOTOS_DIR, exist_ok=True)
-os.makedirs(THUMBS_DIR, exist_ok=True)
-os.makedirs(ZIPS_DIR, exist_ok=True)
+# Certifique-se de que as pastas existem com permissões adequadas
+def create_directories_with_permissions():
+    for directory in [FOTOS_DIR, THUMBS_DIR, ZIPS_DIR]:
+        try:
+            os.makedirs(directory, exist_ok=True)
+            # Tentar definir permissões apenas em sistemas Unix/Linux
+            if os.name != 'nt':  # 'nt' é o Windows
+                try:
+                    os.chmod(directory, 0o777)
+                except (PermissionError, OSError):
+                    print(f"Aviso: Não foi possível definir permissões para {directory}")
+        except PermissionError as e:
+            print(f"Erro de permissão ao criar diretório {directory}: {e}")
+        except Exception as e:
+            print(f"Erro ao criar diretório {directory}: {e}")
+
+create_directories_with_permissions()
+
+
+def safe_makedirs(directory):
+    """Cria diretórios de forma segura, compatível com Windows e Linux"""
+    try:
+        os.makedirs(directory, exist_ok=True)
+        # Apenas tenta definir permissões em sistemas Unix/Linux
+        if os.name != 'nt':
+            try:
+                os.chmod(directory, 0o777)
+            except (PermissionError, OSError):
+                pass  # Ignora erros de permissão silenciosamente
+        return True
+    except Exception as e:
+        print(f"Erro ao criar diretório {directory}: {e}")
+        return False
 
 
 def no_cache(f):
@@ -111,13 +140,22 @@ def upload_photo(turma, processo):
 
     image_data = data['image'].split(',')[1]
     photo_path = os.path.join(FOTOS_DIR, turma, f'{processo}.jpg')
-    os.makedirs(os.path.dirname(photo_path), exist_ok=True)
+    
+    # Criar diretório da foto de forma segura
+    if not safe_makedirs(os.path.dirname(photo_path)):
+        return "Erro ao criar diretório para fotos.", 500
 
-    with open(photo_path, 'wb') as photo_file:
-        photo_file.write(BytesIO(base64.b64decode(image_data)).getvalue())
+    try:
+        with open(photo_path, 'wb') as photo_file:
+            photo_file.write(BytesIO(base64.b64decode(image_data)).getvalue())
+    except Exception as e:
+        return f"Erro ao salvar foto: {e}", 500
 
     thumb_path = os.path.join(THUMBS_DIR, turma, f'{processo}.jpg')
-    os.makedirs(os.path.dirname(thumb_path), exist_ok=True)
+    
+    # Criar diretório da thumbnail de forma segura
+    if not safe_makedirs(os.path.dirname(thumb_path)):
+        return "Erro ao criar diretório para thumbnails.", 500
 
     with open(photo_path, 'rb') as photo_file:
         image = cv2.imdecode(np.frombuffer(photo_file.read(), np.uint8), cv2.IMREAD_COLOR)
