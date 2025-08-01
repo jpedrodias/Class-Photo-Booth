@@ -4,8 +4,9 @@ services:
     container_name: ${FLASKAPP_NAME}
     #command: gunicorn -w 10 -b :5000 app:app
     #command: ./run.sh ${FLASKAPP_FILE}
-    command: sh -c "chmod +x ./init.sh && ./init.sh python ./${FLASKAPP_FILE}"
+    command: python ./${FLASKAPP_FILE}
     restart: unless-stopped
+    user: "${UID:-1000}:${GID:-1000}"
     build: 
       context: .
       dockerfile: Dockerfile
