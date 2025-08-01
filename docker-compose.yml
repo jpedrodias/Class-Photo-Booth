@@ -11,6 +11,9 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./flaskapp/:/app
+      - ./flaskapp/fotos:/app/fotos
+      - ./flaskapp/thumbs:/app/thumbs
+      - ./flaskapp/zips:/app/zips
       - /etc/localtime:/etc/localtime:ro
     ports:
       - ${FLASKAPP_PORT}:5000

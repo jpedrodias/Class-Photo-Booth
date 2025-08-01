@@ -25,6 +25,11 @@ RUN dos2unix -i -o ./*.sh && \
 RUN python -m pip install pip --upgrade
 RUN python -m pip install -r requirements.txt --no-cache-dir
 
+# Create directories and set permissions before switching to appuser
+RUN mkdir -p /app/fotos /app/thumbs /app/zips && \
+    chown -R appuser:appgroup /app/fotos /app/thumbs /app/zips && \
+    chmod -R 755 /app/fotos /app/thumbs /app/zips
+
 USER appuser
 
 #CMD [ "python", "app.py" ]
